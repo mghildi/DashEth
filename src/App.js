@@ -76,6 +76,7 @@ const getPaymentColor = (ratio) => {
 export default function Dashboard() {
   const [inventoryMoMRatio, setInventoryMoMRatio] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [csvLoading, setCsvLoading] = useState(true);
 
   const [selectedMetric, setSelectedMetric] = useState(null);
   const [inventorySums, setInventorySums] = useState({ current: 0, previous: 0 });
@@ -102,7 +103,8 @@ export default function Dashboard() {
   
 
   useEffect(() => {
-    fetch("http://localhost:8000/inventory-ratio")
+    fetch("https://fastapi-dashboard-51sz.onrender.com/inventory-ratio")
+
       .then(res => res.json())
       .then(data => {
         console.log("Bill from API:", data.payments_cm, typeof data.payments_cm);
@@ -184,6 +186,11 @@ export default function Dashboard() {
         setCurrentMonthData(current);
         setPreviousMonthData(previous);
         setMetrics(Object.keys(parsed[0]).filter(k => k !== 'Date' && k.trim() !== ''));
+        setCsvLoading(false); // ✅ end loading
+      })
+      .catch(err => {
+        console.error("Error fetching CSV:", err);
+        setCsvLoading(false); // ✅ still end loading on failure
       });
   }, []);
   
